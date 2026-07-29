@@ -149,3 +149,67 @@ GROUP BY country, 2
 ORDER BY avg_release DESC 
 LIMIT 5
 
+
+-- 11. List all movies that are documentaries
+SELECT * FROM netflix
+WHERE listed_in LIKE '%Documentaries'
+
+
+
+-- 12. Find all content without a director
+SELECT * FROM netflix
+WHERE director IS NULL
+
+
+-- 13. Find how many movies actor 'Salman Khan' appeared in last 10 years!
+
+SELECT * FROM netflix
+WHERE 
+	casts LIKE '%Salman Khan%'
+	AND 
+	release_year > EXTRACT(YEAR FROM CURRENT_DATE) - 10
+
+
+-- 14. Find the top 10 actors who have appeared in the highest number of movies produced in India.
+
+
+
+SELECT 
+	UNNEST(STRING_TO_ARRAY(casts, ',')) as actor,
+	COUNT(*)
+FROM netflix
+WHERE country = 'India'
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10
+
+/*
+Question 15:
+Categorize the content based on the presence of the keywords 'kill' and 'violence' in 
+the description field. Label content containing these keywords as 'Bad' and all other 
+content as 'Good'. Count how many items fall into each category.
+*/
+
+
+SELECT 
+    category,
+	TYPE,
+    COUNT(*) AS content_count
+FROM (
+    SELECT 
+		*,
+        CASE 
+            WHEN description ILIKE '%kill%' OR description ILIKE '%violence%' THEN 'Bad'
+            ELSE 'Good'
+        END AS category
+    FROM netflix
+) AS categorized_content
+GROUP BY 1,2
+ORDER BY 2
+
+
+
+
+-- End of reports
+
+
